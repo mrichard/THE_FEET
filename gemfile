@@ -1,0 +1,10 @@
+source :rubygems
+
+gem "sinatra", :git => "git://github.com/sinatra/sinatra.git"
+gem "patron"
+gem "thin"
+gem "json"
+gem "haml"
+gem "mongodb"
+gem "mongo"
+gem "bson_ext"

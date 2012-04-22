@@ -1,0 +1,45 @@
+GIT
+  remote: git://github.com/sinatra/sinatra.git
+  revision: 1399a7ba09fa4d775d75420b01e7b3e4d2818d73
+  specs:
+    sinatra (1.4.0)
+      rack (~> 1.3, >= 1.3.6)
+      rack-protection (~> 1.2)
+      tilt (~> 1.3, >= 1.3.3)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    bson (1.6.2)
+    bson_ext (1.6.2)
+      bson (~> 1.6.2)
+    daemons (1.1.8)
+    eventmachine (0.12.10)
+    haml (3.1.4)
+    json (1.6.6)
+    mongo (1.6.2)
+      bson (~> 1.6.2)
+    mongodb (2.1.0)
+      mongo (~> 1.5)
+    patron (0.4.18)
+    rack (1.4.1)
+    rack-protection (1.2.0)
+      rack
+    thin (1.3.1)
+      daemons (>= 1.0.9)
+      eventmachine (>= 0.12.6)
+      rack (>= 1.0.0)
+    tilt (1.3.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bson_ext
+  haml
+  json
+  mongo
+  mongodb
+  patron
+  sinatra!
+  thin
