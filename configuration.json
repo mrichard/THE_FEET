@@ -1,0 +1,85 @@
+/** 
+** ---- This is the build configuration file for Javascript and CSS ----
+**
+**
+** The full build process is:
+**
+** 		files listed below --> jsHint Validation --> concatenate each list --> minify each concatenated file
+**
+**		Flags:
+**			jsHintEnabled - enable/disable jsHint step
+**			jsConcateEnabled - enable/disable concatenate step (DO NOT DISABLE)
+**			jsMinifyEnabled - enable/disable minify step
+**
+**
+**
+**		Build lists:
+**			You can create a new page list of files by -
+**				PAGEID : {
+**					js : [],  ** files listed in an array relative to static/js folder in the project
+**					css : [] ** files listed in an array relative to static/css folder in the project
+**				}
+**
+**
+**
+**			The final product of the build will be -
+**				js files: 	static/build/js/PAGEID.js
+**				css files:	static/build/css/PAGEID.css
+**	
+**
+**
+**			On the jsp you will use:
+**				<script type="text/javascript" src="/static/build/js/PAGEID.js"></script> 
+**
+**			This is a concatenated, minified file containing the list of files specified in the build list
+**
+**
+**
+**		Folder Structure of front end files:
+**
+**		static/
+**			js/		--- Source folder for JS (checked into SVN)
+**			css/	--- Source folder for JS (checked into SVN)
+**
+**
+**			build/
+**				js/		--- Target build folder for JS. Production ready files. (checked into SVN)
+**				css/	--- Target build folder for CSS. Production ready files. (checked into SVN)
+**
+**/
+
+/**
+** TODO: 	break apart saks-global.css for MHP so that only essential is included.
+**			break apart saks-global.js so that only essential is included
+**/
+
+
+{
+	frontendBuildFlags : {
+		"jshint.enabled" : false,
+		"csslint.enabled" : false,
+		"concatenate.enabled" : true,
+		"jsminify.enabled" : true,
+		"cssminify.enabled" : true,
+		"cachebust.enabled" : false
+	},
+	
+	frontendBuild : { 
+		global : {				
+			js : [
+				"public/js/lib/jquery-1.7.2.min.js",
+				"public/js/lib/json2.js",
+				"public/lib/backbone.js"
+				"public/js/global/core/core.js",
+				"public/js/global/utils/global.utils.js",
+				"public/js/global/routers/main-router.js",
+				"public/js/global/app.js"
+			],
+			
+			css : [				
+
+			]
+		}
+	}
+}
+  	

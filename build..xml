@@ -1,0 +1,352 @@
+<project name="build-frontend" basedir=".">
+	<import file="frontend-build-properties.xml" />
+	<!-- Gets a file modified time -->
+	<scriptdef name="getLastModifiedDate" language="javascript">
+		<attribute name="filepath"/>
+		<attribute name="propname"/>
+		<![CDATA[
+			importClass(java.io.File);
+		
+			var file = new File( attributes.get("filepath") );
+			var date = (new Date( file.lastModified() )).getTime()/1000;
+			project.setNewProperty(attributes.get("propname") , date);
+		]]>
+	</scriptdef> 	
+
+	<!-- Helper definition to split a property in two -->
+	<scriptdef name="split" language="javascript">
+    	<attribute name="value"/>
+        <attribute name="sep"/>
+        <attribute name="namespace"/>
+        <attribute name="prefix"/>
+        <![CDATA[
+             values = attributes.get("value").split(attributes.get("sep"));
+             pageid = values[0].split( attributes.get("namespace") )[1];
+             project.setNewProperty(attributes.get("prefix")+"pageID", pageid);
+             project.setNewProperty(attributes.get("prefix")+"filegroup", values[1]);
+        ]]>
+   	</scriptdef> 	
+
+	<!-- Reads JSON property file and sets up FE build -->
+	<scriptdef name="getJsonConfigurationProperties" language="javascript"> 
+		<attribute name="filepath"/>
+		<attribute name="gobuild"/>
+		<![CDATA[
+	    	importClass(java.io.File);
+	    	importClass(java.io.FileReader);
+	    	importClass(java.io.BufferedReader);
+	    	importClass(java.io.FileWriter);
+	    	importClass(java.io.BufferedWriter);
+
+			var isGoBuild = attributes.get("gobuild");
+		
+	    	var file = new File( attributes.get("filepath") );
+	    	fr = new FileReader(file);
+	    	br = new BufferedReader(fr);
+
+	    	var json = "";
+			var currentline = null;
+			while ((currentline = br.readLine()) != null)
+				json += currentline;
+
+	    	var struct = eval("(" + json + ")"); 
+		
+			for(key in struct.frontendBuildFlags)
+				project.setNewProperty(key, struct.frontendBuildFlags[key]);
+		
+			var configureFilesets = function(fileType){
+				var propName = "";
+				var propValue = "";
+				var propValueAll = "";
+				var propDelimitedAll = "";
+		
+				for(var key in struct.frontendBuild){
+					if(struct.frontendBuild[key][fileType].length > 0){
+						propName = fileType+".buildfiles."+key;
+						propValue = struct.frontendBuild[key][fileType].join(" ");
+		
+						echo = project.createTask("echo");
+			    		echo.setMessage("propName = " + propName + " AND " + "propValue = " + propValue);
+			    		echo.perform();
+		
+						project.setNewProperty(propName, propValue);
+		
+						propValueAll += propValue + " ";
+						propDelimitedAll += propName + "=" + propValue + ",";
+					}
+				}
+		
+				project.setNewProperty(fileType+".path.ALL", propValueAll);
+	
+      			allFileSet = project.createDataType("fileset");
+				allFileSet.setDir( new File( project.getProperty("static."+fileType+".dir") ) );
+				allFileSet.setIncludes(propValueAll);
+	
+				project.addReference( fileType+".fileset.ALL", allFileSet );
+				project.setNewProperty(fileType+".path.delimited.ALL", propDelimitedAll);	
+			};
+		
+			echo = project.createTask("echo");
+			echo.setMessage("isGoBuild = " + isGoBuild);
+			echo.perform();
+		
+			if(isGoBuild == "false"){
+				configureFilesets('js');
+				configureFilesets('css');
+			}
+	    ]]>
+	</scriptdef>
+
+	<!-- Cleans up directories -->
+	<target name="-fe-init">
+		<echo message="init FE -- deleting build files in ${fe.build.js.dir} and ${fe.build.css.dir}" />
+		<if>
+			<available file="${fe.build.dir}" type="dir" />
+		  	<then>
+				<delete>
+					<fileset dir="${fe.build.js.dir}">
+						<include name="*.js"/>
+					</fileset>
+				</delete>
+				<delete>
+					<fileset dir="${fe.build.css.dir}">
+						<include name="*.css"/>
+					</fileset>
+				</delete>
+		  	</then>
+		  	<else>
+		    	<echo message="Directory does not exist so create them" />
+				<mkdir dir="${fe.build.dir}"/>
+				<mkdir dir="${fe.build.js.dir}"/>
+				<mkdir dir="${fe.build.css.dir}"/>
+		  	</else>
+		</if>
+		
+		<echo message="init FE -- deleting concate directory at ${fe.intermediate.dir}" />
+		<delete dir="${fe.intermediate.dir}" />
+		
+		<echo message="init FE -- make concate directory at ${fe.intermediate.js.dir} and ${fe.intermediate.css.dir}" />
+		<mkdir dir="${fe.intermediate.dir}"/>
+		<mkdir dir="${fe.intermediate.js.dir}"/>
+		<mkdir dir="${fe.intermediate.css.dir}"/>
+	
+		<echo message="Initializing build properties from JSON configuration" />
+		<getJsonConfigurationProperties filepath="frontend-configuration.json" gobuild="false"/>
+		
+		<echo message="FINISHED init JS..." />
+	</target>
+	
+	<target name="-fe-cleanup">
+		<echo message="FE cleanup -- deleting concate directory at ${fe.intermediate.dir}" />
+		<delete dir="${fe.intermediate.dir}" />
+	</target>
+	
+	<!--  Javascript validator -->
+    <target name="-js-hint">
+    	<echo message="jshint validation. Files: ${input}"/>
+    		<if>
+    			<equals arg1="${jshint.enabled}" arg2="true" />
+    			<then>
+      				<apply executable="java" parallel="false" failonerror="true">
+      					<fileset file="${input}" />
+            			<arg value="-jar" />
+      					<arg path="${fe.tools.rhino}" />
+      					<arg path="${fe.tools.jshint}" />
+            			<srcfile/>
+            			<arg value="${fe.tools.jshint.opts}" />
+        			</apply>
+    			</then>
+    			<else>
+    				<echo message="Skipping jshint validation... toggle = ${jshint.enabled}" />
+    			</else>
+    		</if>
+    	<echo message="FINISHED jshint validation..." />
+    </target>
+    	
+    <!-- CSS Validator -->
+    <target name="-css-lint">
+       	<echo message="csslint validation. Files: ${input}"/>
+       		<if>
+       			<equals arg1="${csslint.enabled}" arg2="true" />
+       			<then>
+        			<apply executable="java" parallel="false" failonerror="true">
+          				<fileset file="${input}" />
+                		<arg value="-jar" />
+          				<arg path="${fe.tools.rhino}" />
+          				<arg path="${fe.tools.csslint}" />
+                		<srcfile/>
+                		<arg value="${fe.tools.csslint.opts}" />
+            		</apply>
+        		</then>
+        		<else>
+        			<echo message="Skipping csslint validation... toggle = ${csslint.enabled}" />
+        		</else>
+        	</if>
+        <echo message="FINISHED csslint validation..." />
+    </target>
+	
+	<!-- Concatenate set of file lists -->
+	<target name="-concatenate-group">
+		<echo message="Concatenating group: ${inputgroup}" />
+		<for list="${inputgroup}" delimiter="," param="input">
+  			<sequential>
+    			<var name="to.concate.pageID" unset="true"/>
+    			<var name="to.concate.filegroup" unset="true"/>
+    			
+    			<split value="@{input}" sep="=" prefix="to.concate." namespace="${inputgroup-namespace}"/>
+   
+    			<antcall target="-concatenate">
+    				<param name="input" value="${to.concate.filegroup}"/>
+    				<param name="input.dir" value="${inputgroup-dir}"/>
+    				<param name="outputfile" value="${inputgroup-intermediate-dir}/${to.concate.pageID}.${inputgroup-extension}"/>
+  				</antcall>
+  			</sequential>
+		</for>
+	</target>
+	
+	<!-- concatenate file lists -->
+	<target name="-concatenate">
+		<echo message="concatenating files: ${input} and copying output to ${outputfile}" />
+		<if>
+			<equals arg1="${concatenate.enabled}" arg2="true" />
+			<then>
+			  	<concat destfile="${outputfile}">
+					<filelist dir="${input.dir}" files="${input}" />
+				</concat>
+			</then>
+			<else>
+				<echo message="Skipping concatenation.. toggle = ${concatenate.enabled}" />
+			</else>
+		</if>
+		<echo message="FINISHED concatenating files... file in: ${outputfile}" />
+	</target>
+
+	<!-- Minify js files in intermediate folder -->
+	<target name="-minify">
+		<echo message="Minimizing ${extension} files: ${input}" />
+		<if>
+			<equals arg1="${minify.enabled}" arg2="true" />
+			<then>
+			  	<apply executable="java" parallel="false"> 
+	        		<fileset dir="${input}">
+	        			<include name="*.${extension}"/>
+	        		</fileset> 
+	   				<arg value="-jar"/>
+	        		<arg value="${fe.tools.yui}"/>
+	    			<srcfile/>
+	    			<arg value="-o" />
+	    			<mapper type="glob" from="*.${extension}" to="${tofolder}/*.${extension}" />
+	    			<targetfile/>
+				</apply>
+			</then>
+			<else>
+				<echo message="Skipping minification... toggle = ${minify.enabled}. Copying unminified files to build dir" />
+				<copy todir="${tofolder}">
+    				<fileset dir="${input}" includes="*.${extension}"/>
+  				</copy>
+			</else>
+		</if>
+		<echo message="FINISHED minimizing ${extension} ${input} ..." />
+	</target>
+	
+	
+	
+	<target name="-build-js">
+		<!-- TAKES A COMBINED FILESET OF ALL JS and runs jsHint on each -->
+	    <for param="file">
+  			<path><fileset refid="js.fileset.ALL" /></path>
+  			<sequential>
+				<antcall target="-js-hint"><param name="input" value="@{file}"/></antcall>
+  			</sequential>
+		</for>	
+		<!-- TAKES each JS page property and concatenates them and moves them to intermediate DIR -->
+		<antcall target="-concatenate-group">
+			<param name="inputgroup" value="${js.path.delimited.ALL}"/>
+			<param name="inputgroup-namespace" value="${js.build.namespace}"/>
+			<param name="inputgroup-dir" value="${static.js.dir}"/>
+			<param name="inputgroup-intermediate-dir" value="${fe.intermediate.js.dir}"/>
+			<param name="inputgroup-extension" value="js"/>
+		</antcall>
+		<!-- TAKES all files from intermediate JS folder on minizes them and then copies them to build folder -->
+		<antcall target="-minify">
+			<param name="input" value="${fe.intermediate.js.dir}"/>
+			<param name="extension" value="js"/>
+			<param name="tofolder" value="${fe.build.js.dir}"/>
+			<param name="minify.enabled" value="${jsminify.enabled}"/>
+  		</antcall>
+	</target>
+
+	<target name="-build-css">
+		<!-- TAKES A COMBINED FILESET OF ALL CSS and runs jcsLint on each -->
+	    <for param="file">
+  			<path><fileset refid="css.fileset.ALL" /></path>
+  			<sequential>
+				<antcall target="-css-lint"><param name="input" value="@{file}"/></antcall>
+  			</sequential>
+		</for>
+		<!-- TAKES each CSS page property and concatenates them and moves them to intermediate DIR --> 
+		<antcall target="-concatenate-group">
+			<param name="inputgroup" value="${css.path.delimited.ALL}"/>
+			<param name="inputgroup-namespace" value="${css.build.namespace}"/>
+			<param name="inputgroup-dir" value="${static.css.dir}"/>
+			<param name="inputgroup-intermediate-dir" value="${fe.intermediate.css.dir}"/>
+			<param name="inputgroup-extension" value="css"/>
+		</antcall>
+		<!-- TAKES all files from intermediate CSS folder on minizes them and then copies them to build folder -->
+		<antcall target="-minify">
+			<param name="input" value="${fe.intermediate.css.dir}"/>
+			<param name="extension" value="css"/>
+			<param name="tofolder" value="${fe.build.css.dir}"/>
+			<param name="minify.enabled" value="${cssminify.enabled}"/>
+  		</antcall>
+	</target>
+	
+	<target name="cachebust">
+		
+		<!-- gets systime -->
+		<script language="javascript">
+	  		<![CDATA[
+	    		project.setNewProperty("deployDateTime",Math.floor((new Date()).getTime()/1000));
+	  		]]>
+	  	</script>
+		
+		<mkdir dir="${cachebustBuild.dir}"/>
+		<mkdir dir="${cachebustBuild.dir.jsp}"/>
+		<mkdir dir="${cachebustBuild.dir.static}"/>
+		
+		<copy todir="${cachebustBuild.dir.jsp}">
+			<fileset dir="${jsp.dir}" includes="**/*"/>
+		</copy>
+		
+		<copy todir="${cachebustBuild.dir.static}">
+			<fileset dir="${static.dir}" includes="**/*"/>
+		</copy>
+
+		<echo message="Cache Bust flag --> ${cachebust.enabled}" />
+		<if>
+			<equals arg1="${cachebust.enabled}" arg2="true" />
+			<then>
+				<echo message="Cache Bust ${cachebust.enabled}... starting now" />
+				<replaceregexp match='(\/?(?:static|promo)\/(?:[^\s]+\/)+[^\s]+\.(?:css|js|jpg|gif|png))' replace='\1?v=${deployDateTime}' flags="gi">
+					<fileset dir="${cachebustBuild.dir.jsp}" includes="**/*.jsp"/>
+				</replaceregexp>
+				
+				<replaceregexp match='(\b[^\s]+\.(jpg|gif|png)\b)' replace='\1?v=${deployDateTime}' flags="gi"> 
+					<fileset dir="${cachebustBuild.dir.static}" includes="**/*.js"/>
+					<fileset dir="${cachebustBuild.dir.static}" includes="**/*.css"/>
+				</replaceregexp>
+			</then>
+			<else>
+				<echo message="Skipping cache bust " />
+			</else>
+		</if>
+	</target>
+	
+	<target name="-cachebust-cleanup">
+		<echo message="Cleanup deleting DIr: ${cachebustBuild.dir}" />
+		<delete dir="${cachebustBuild.dir}" />
+	</target>
+</project>
+
+
+

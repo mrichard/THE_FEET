@@ -19,41 +19,11 @@
 	
 	%script{:src => "js/lib/modernizr-2.5.3.min.js"}
 
-%body
-	%div.navbar.navbar-fixed-top.shadow
-		%div.navbar-inner
-			%div.container
-				%a.brand SAKS F.E.E.T
-				%ul.nav
-					%li
-						%a{:href =>"#about"} About
-					%li.divider-vertical
-					%li
-						%a{:href =>"#blog"} Blog
-					%li.divider-vertical
-					%li
-						%a{:href =>"#code-conventions"} Code Conventions
-					%li.divider-vertical
-					%li
-						%a{:href =>"#articles"} Articles
-					%li.divider-vertical
-					%li
-						%a{:href =>"#mobile"} Mobile
-	%div.container
-		%div#main{:role => "main"}
-			%header.jumbotron.masthead
-				%h1 SAKS F.E.E.T
-			%div.row
-				%div.span8.offset2.larger
-					%div.row
-						%div.span2 (Front)
-						%div.span2.text-left (End)
-						%div.span2.text-right (Engineering)
-						%div.span2.text-right (Team)
-			
-			%hr
-			%section
-			%footer
+%body						
+	%div.container#main{:role => "main"}
+		%header
+		%section	
+		%footer
 			
 	
 	%script{:src => "js/lib/json2.js"}
@@ -63,7 +33,5 @@
 	%script{:src => "js/lib/underscore.js"}
 	%script{:src => "js/lib/mustache.js"}
 	%script{:src => "js/lib/backbone.js"}
-	%script{:src => "js/global/routers/main-router.js"}
-	%script{:src => "js/global/app.js"}
 	
 </html>

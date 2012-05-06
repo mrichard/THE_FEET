@@ -9,10 +9,14 @@ configure do
 end
 
 # two version of home page - one html and haml
-get '/home' do
-  File.read(File.join('public', 'html/home.html'))
-end
+#get '/home' do
+#  File.read(File.join('public', 'html/home.html'))
+#end
 
 get '/entry' do
   haml :'entry/entry'
+end
+
+get '/code-conventions' do
+  haml :'codeconventions/code'
 end

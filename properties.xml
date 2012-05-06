@@ -1,0 +1,56 @@
+<project name="frontend-properties" basedir=".">
+	<description>
+        Common frontend properties
+    </description>
+    
+     <!-- ANT contrib taskdef -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+    	<classpath>
+            <pathelement location="${lib}/frontendbuild/ant-contrib/ant-contrib-1.0b3.jar"/>
+        </classpath>
+    </taskdef>
+
+ 	<property name="static.dir" value="static" /> 	
+	
+	<!-- deploy directories -->
+	<property name="cachebustBuild.dir" value="cachebustBuild" />
+	<property name="cachebustBuild.dir.jsp" value="${cachebustBuild.dir}/jsp" />
+	<property name="cachebustBuild.dir.static" value="${cachebustBuild.dir}/static" />
+ 	
+ 	<!-- build directories -->
+	<property name="fe.build.dir" value="${static.dir}/build" />
+ 	<property name="fe.build.js.dir" value="${fe.build.dir}/js" />
+ 	<property name="fe.build.css.dir" value="${fe.build.dir}/css" />
+	
+ 	<!-- deploy build directories -->
+	<property name="deploy.build.dir" value="${bm.static.root.dir}/build" />
+ 	<property name="deploy.build.js.dir" value="${deploy.build.dir}/js" />
+ 	<property name="deploy.build.css.dir" value="${deploy.build.dir}/css" />
+ 	
+ 	<!-- concatenated file dir -->
+ 	<property name="fe.intermediate.dir" value="${static.dir}/intermediate" />
+ 	<property name="fe.intermediate.js.dir" value="${fe.intermediate.dir}/js" />
+ 	<property name="fe.intermediate.css.dir" value="${fe.intermediate.dir}/css" />
+ 	
+ 	<!-- Build tools -->
+ 	<property name="fe.tools.dir" value="${lib}/frontendbuild" />
+	
+ 	<property name="fe.tools.rhino" value="${fe.tools.dir}/rhino/rhino.jar" />
+	
+ 	<property name="fe.tools.jshint" value="${fe.tools.dir}/jshint/fulljshint.js" />
+ 	<property name="fe.tools.jshint.opts" value="maxerr=25,eqeqeq=true" />
+	
+	<property name="fe.tools.csslint" value="${fe.tools.dir}/csslint/csslint-rhino.js" />
+	<property name="fe.tools.csslint.opts" value="" />
+	
+ 	<property name="fe.tools.yui" value="${fe.tools.dir}/yuicompressor-2.4.7/yuicompressor-2.4.7.jar" />
+	
+ 	<property name="fe.tools.closurecompiler" value="${fe.tools.dir}/closure-compiler/closure-compiler-v1346.jar" />
+ 	<property name="fe.tools.closurecompiler.level" value="SIMPLE_OPTIMIZATIONS" />
+ 	<property name="fe.tools.closurecompiler.warninglevel" value="QUIET" />
+ 	
+	<property name="js.build.namespace" value="js.buildfiles." />
+	<property name="css.build.namespace" value="css.buildfiles." />
+</project>
+
+<?xml version="1.0" encoding="UTF-8"?>

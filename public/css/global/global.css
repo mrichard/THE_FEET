@@ -1,0 +1,42 @@
+@CHARSET "UTF-8";
+
+/*html{
+ background-attachment: fixed;
+    background-clip: border-box;
+    background-color: transparent;
+    background-image: url("http://www.saksfifthavenue.com/static/images/utility_pages/images_small2.jpg");
+    background-origin: padding-box;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}*/
+
+#main .container{position:relative;}
+
+.text-right{text-align:right;}
+.text-left{text-align:left;}
+.text-center{text-align:center;}
+
+.larger{font-size:2em;}
+
+.depth{box-shadow:2px 2px 3px #333;}
+
+.jumbotron{position:relative;padding-top:35px;}
+.jumbotron h1{font-size: 20em;
+    font-weight: bold;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 9px;
+    text-align:center;
+    text-shadow:
+	1px 1px 0px #666,
+    2px 2px 0px #6F6F6F,
+	3px 3px 0px #777,
+	4px 4px 0px #808080,
+	5px 5px 0px #888,
+	6px 6px 0px #919191,
+	7px 7px 0px #999,
+	8px 8px 0px #A2A2A2,
+	9px 9px 0px #AAA,
+	10px 10px 0px #B3B3B3,
+	11px 11px 0px #BBB;}

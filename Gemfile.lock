@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/sinatra/sinatra.git
-  revision: 1399a7ba09fa4d775d75420b01e7b3e4d2818d73
+  revision: 5a8080a077c298efc9917f7126503e99b9adb60b
   specs:
     sinatra (1.4.0)
       rack (~> 1.3, >= 1.3.6)
@@ -10,26 +10,69 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
+    addressable (2.2.7)
+    bcrypt-ruby (3.0.1)
     bson (1.6.2)
     bson_ext (1.6.2)
       bson (~> 1.6.2)
-    commonjs (0.2.5)
+    commonjs (0.2.6)
     daemons (1.1.8)
+    data_mapper (1.2.0)
+      dm-aggregates (~> 1.2.0)
+      dm-constraints (~> 1.2.0)
+      dm-core (~> 1.2.0)
+      dm-migrations (~> 1.2.0)
+      dm-serializer (~> 1.2.0)
+      dm-timestamps (~> 1.2.0)
+      dm-transactions (~> 1.2.0)
+      dm-types (~> 1.2.0)
+      dm-validations (~> 1.2.0)
+    dm-aggregates (1.2.0)
+      dm-core (~> 1.2.0)
+    dm-constraints (1.2.0)
+      dm-core (~> 1.2.0)
+    dm-core (1.2.0)
+      addressable (~> 2.2.6)
+    dm-migrations (1.2.0)
+      dm-core (~> 1.2.0)
+    dm-serializer (1.2.1)
+      dm-core (~> 1.2.0)
+      fastercsv (~> 1.5.4)
+      json (~> 1.6.1)
+      json_pure (~> 1.6.1)
+      multi_json (~> 1.0.3)
+    dm-timestamps (1.2.0)
+      dm-core (~> 1.2.0)
+    dm-transactions (1.2.0)
+      dm-core (~> 1.2.0)
+    dm-types (1.2.1)
+      bcrypt-ruby (~> 3.0.0)
+      dm-core (~> 1.2.0)
+      fastercsv (~> 1.5.4)
+      json (~> 1.6.1)
+      multi_json (~> 1.0.3)
+      stringex (~> 1.3.0)
+      uuidtools (~> 2.1.2)
+    dm-validations (1.2.0)
+      dm-core (~> 1.2.0)
     eventmachine (0.12.10)
+    fastercsv (1.5.4)
     haml (3.1.4)
-    json (1.6.6)
-    less (2.1.0)
-      commonjs (~> 0.2.0)
-      therubyracer (~> 0.10.0)
+    json (1.6.7)
+    json_pure (1.6.7)
+    less (2.2.1)
+      commonjs (~> 0.2.6)
     libv8 (3.3.10.4)
     mongo (1.6.2)
       bson (~> 1.6.2)
     mongodb (2.1.0)
       mongo (~> 1.5)
+    multi_json (1.0.4)
     patron (0.4.18)
     rack (1.4.1)
     rack-protection (1.2.0)
       rack
+    stringex (1.3.3)
     therubyracer (0.10.1)
       libv8 (~> 3.3.10)
     thin (1.3.1)
@@ -37,12 +80,14 @@ GEM
       eventmachine (>= 0.12.6)
       rack (>= 1.0.0)
     tilt (1.3.3)
+    uuidtools (2.1.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   bson_ext
+  data_mapper
   haml
   json
   less
@@ -50,4 +95,5 @@ DEPENDENCIES
   mongodb
   patron
   sinatra!
+  therubyracer
   thin
