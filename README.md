@@ -2,6 +2,12 @@ find install: which ant
 find real path of symbolic link: ls -al /usr/bin/ant
 create new file: touch
 
+
+GITHUB REPO
+https://github.com/mrichard/THE_FEET
+git remote add origin git@github.com:username/Hello-World.git
+git push -u origin master
+
 /*** BoilerPlate Application ***/
 Backend:
 	Sinatra

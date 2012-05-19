@@ -1,17 +1,8 @@
 var Workspace = Backbone.Router.extend({
 
 	routes: {
-		":mainQuery" : "handleRoute" 
+		"code-conventions" : "getCodeConventions" 
 	},
-
-	handleRoute: function(mainQuery) {
-		logger.log('route --> '+ mainQuery);
-		if( mainNavigation[mainQuery] ){
-			mainNavigation[mainQuery]();
-		} else {
-			mainNavigation['sorry']();
-		}
-  	},
 
   	var mainNavigation = {
   		about : function() {
@@ -33,5 +24,19 @@ var Workspace = Backbone.Router.extend({
   			
   		}
   	};
+	
+	handleRoute: function(mainQuery) {
+		logger.log('route --> '+ mainQuery);
+		if( mainNavigation[mainQuery] ){
+			mainNavigation[mainQuery]();
+		} else {
+			mainNavigation['sorry']();
+		}
+  	},
+  	
+  	getCodeConventions : function(){
+  		logger.log('geting code conventions');
+  		
+  	}
 
 });
