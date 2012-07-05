@@ -1,6 +1,6 @@
 find install: which ant
 find real path of symbolic link: ls -al /usr/bin/ant
-create new file: touch
+create new file: touch  s
 
 
 GITHUB REPO
